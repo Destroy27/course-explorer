@@ -47,6 +47,7 @@ Setiap tahap berada pada file tersendiri agar dapat diamati satu per satu.
 ```
 flutter run -t lib/tahapan/tahap_01_hardcoded.dart -d chrome
 flutter run -t lib/tahapan/tahap_03_layoutbuilder.dart -d chrome
+flutter run -t lib/tahapan/tahap_15_integrasi.dart -d chrome
 flutter run -t lib/tahapan/tahap_16_debugging.dart -d chrome
 ```
 
@@ -69,4 +70,6 @@ flutter test
 
 Sapuan layout pada `test/tahapan_layout_test.dart` menjalankan seluruh entry
 point tahapan pada lebar 320, 360, 640, dan 2560 piksel logis untuk memastikan
-tidak ada error layout maupun overflow.
+tidak ada error layout maupun overflow. Entry point tahap 15 sekaligus
+menjalankan aplikasi utama, sehingga Home, Courses, Profile, dan form feedback
+ikut diperiksa pada semua lebar tersebut.

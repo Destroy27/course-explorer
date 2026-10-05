@@ -74,6 +74,32 @@ class HomePage extends StatelessWidget {
                           ? courses.take(2).toList()
                           : active;
 
+                      Widget buildCard(Course course) {
+                        return CourseCard(
+                          course: course,
+                          isFavorite: favoriteCodes.contains(course.code),
+                          onTap: () => onOpenCourse(course),
+                          onToggleFavorite: () => onToggleFavorite(course),
+                        );
+                      }
+
+                      // Compact: satu kolom memakai Column, bukan grid dengan
+                      // mainAxisExtent tetap. Pada lebar ponsel sempit tag
+                      // membungkus ke dua baris sehingga tinggi isi kartu
+                      // melebihi extent dan memicu RenderFlex overflow.
+                      if (columns == 1) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            for (int index = 0; index < shown.length; index++)
+                              ...<Widget>[
+                                if (index > 0) const SizedBox(height: 12),
+                                buildCard(shown[index]),
+                              ],
+                          ],
+                        );
+                      }
+
                       return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -82,17 +108,11 @@ class HomePage extends StatelessWidget {
                           crossAxisCount: columns,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          mainAxisExtent: 210,
+                          mainAxisExtent: 230,
                         ),
                         itemCount: shown.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final Course course = shown[index];
-                          return CourseCard(
-                            course: course,
-                            isFavorite: favoriteCodes.contains(course.code),
-                            onTap: () => onOpenCourse(course),
-                            onToggleFavorite: () => onToggleFavorite(course),
-                          );
+                          return buildCard(shown[index]);
                         },
                       );
                     },

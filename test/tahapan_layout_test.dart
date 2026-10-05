@@ -18,6 +18,7 @@ import 'package:course_explorer/tahapan/tahap_11_adaptive_nav.dart';
 import 'package:course_explorer/tahapan/tahap_12_interaction.dart';
 import 'package:course_explorer/tahapan/tahap_13_form.dart';
 import 'package:course_explorer/tahapan/tahap_14_feedback.dart';
+import 'package:course_explorer/tahapan/tahap_15_integrasi.dart';
 import 'package:course_explorer/tahapan/tahap_16_debugging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +46,10 @@ List<Widget> _apps() => <Widget>[
       const Tahap12App(),
       const Tahap13App(),
       const Tahap14App(),
+
+      // Tahap 15 memakai aplikasi utama dengan data yang disuntikkan agar
+      // sapuan layout tidak bergantung pada pembacaan asset.
+      Tahap15App(courseLoader: loadDemoCourses),
       const Tahap16App(),
     ];
 
