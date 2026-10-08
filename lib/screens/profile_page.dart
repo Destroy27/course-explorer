@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../core/student_identity.dart';
+import '../models/course.dart';
+import '../providers/course_provider.dart';
 import '../widgets/feedback_form.dart';
 import '../widgets/identity_header.dart';
 
-/// Halaman profil mahasiswa sekaligus form umpan balik.
+/// Halaman profil mahasiswa sekaligus form umpan balik (v2).
+///
+/// Total SKS dan jumlah favorit dihitung dari CourseProvider; jumlah favorit
+/// ikut berubah saat state berubah di halaman lain (bukti shared state).
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key, required this.totalCredits});
-
-  final int totalCredits;
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final CourseProvider provider = context.watch<CourseProvider>();
+    final int totalCredits = provider.courses.fold<int>(
+      0,
+      (int total, Course c) => total + c.credits,
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -49,6 +58,17 @@ class ProfilePage extends StatelessWidget {
                       leading: const Icon(Icons.workspace_premium_outlined),
                       title: const Text('Total SKS Terambil'),
                       subtitle: Text('$totalCredits SKS'),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.favorite, color: Colors.amber),
+                      title: const Text('Course Favorit'),
+                      subtitle: provider.favoriteCount == 0
+                          ? const Text('Belum ada course favorit.')
+                          : Text(
+                              '${provider.favoriteCount} course: '
+                              '${provider.favoriteCourses.map((Course c) => c.code).join(', ')}',
+                            ),
                     ),
                   ],
                 ),

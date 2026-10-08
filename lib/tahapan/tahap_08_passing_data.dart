@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/student_identity.dart';
-import '../data/course.dart';
+import '../models/course.dart';
 import '../data/course_repository.dart';
 
 /// Tahap 8: passing data dari list ke detail page lewat constructor.

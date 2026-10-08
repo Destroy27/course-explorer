@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/course.dart';
+import '../models/course.dart';
 import '../main.dart';
 
 /// Tahap 15: integrasi mini project Course Explorer.

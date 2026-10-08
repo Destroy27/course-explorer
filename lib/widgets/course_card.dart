@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/course.dart';
+import '../models/course.dart';
 
 /// Kartu course yang bisa dipakai di dalam GridView maupun ListView.
 ///

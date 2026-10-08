@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import 'course.dart';
+import '../models/course.dart';
 
 /// Sumber data course: memuat collection/JSON statis dari folder assets.
 class CourseRepository {

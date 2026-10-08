@@ -9,10 +9,13 @@ import '../repositories/course_repository.dart';
 /// Tahap 11: async state loading/error/data melalui repository.
 /// Provider ini TIDAK mengandung widget dan TIDAK menyimpan BuildContext.
 class CourseProvider extends ChangeNotifier {
-  CourseProvider({CourseRepository? repository})
+  CourseProvider({CourseRepository? repository, this.loader})
       : _repository = repository ?? const CourseRepository();
 
   final CourseRepository _repository;
+
+  /// Pengganti sumber data, dipakai widget test (courseLoader).
+  final Future<List<Course>> Function()? loader;
 
   // ---- shared state: favorites (Tahap 5) ----
   final Set<String> _favorites = <String>{};
@@ -49,7 +52,7 @@ class CourseProvider extends ChangeNotifier {
     error = null;
     notifyListeners();
     try {
-      courses = await _repository.getCourses();
+      courses = await (loader?.call() ?? _repository.getCourses());
     } catch (e) {
       error = e.toString();
     } finally {

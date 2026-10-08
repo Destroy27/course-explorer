@@ -1,30 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../core/breakpoint.dart';
 import '../core/student_identity.dart';
-import '../data/course.dart';
-import '../data/course_repository.dart';
+import '../models/course.dart';
+import '../providers/course_provider.dart';
+import '../screens/course_detail_page.dart';
+import '../services/course_service.dart';
 import '../widgets/course_card.dart';
 import '../widgets/feedback_form.dart';
 import '../widgets/identity_header.dart';
 
-/// Halaman utama Course Explorer.
+/// Halaman utama Course Explorer v2.
+///
+/// State (daftar course dan favorit) dibaca langsung dari CourseProvider
+/// dengan `context.watch`; tidak ada prop drilling parameter dari induk.
 class HomePage extends StatelessWidget {
-  const HomePage({
-    super.key,
-    required this.courses,
-    required this.favoriteCodes,
-    required this.onOpenCourse,
-    required this.onToggleFavorite,
-  });
+  const HomePage({super.key});
 
-  final List<Course> courses;
-  final Set<String> favoriteCodes;
-  final ValueChanged<Course> onOpenCourse;
-  final ValueChanged<Course> onToggleFavorite;
+  /// Membuka halaman detail lewat arah navigasi; detail membaca provider
+  /// yang sama sehingga favorit konsisten dengan halaman ini.
+  Future<void> _openDetail(BuildContext context, Course course) {
+    return Navigator.push<void>(
+      context,
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => CourseDetailPage(course: course),
+      ),
+    );
+  }
+
+  void _toggleFavorite(BuildContext context, Course course) {
+    final CourseProvider provider = context.read<CourseProvider>();
+    final bool isFavorite = !provider.isFavorite(course.code);
+    provider.toggleFavorite(course.code);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${course.code} ${isFavorite ? 'ditambahkan ke' : 'dihapus dari'} '
+          'favorit - $identityLine',
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final CourseProvider provider = context.watch<CourseProvider>();
+    final List<Course> courses = provider.courses;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Course Explorer'),
@@ -77,9 +101,10 @@ class HomePage extends StatelessWidget {
                       Widget buildCard(Course course) {
                         return CourseCard(
                           course: course,
-                          isFavorite: favoriteCodes.contains(course.code),
-                          onTap: () => onOpenCourse(course),
-                          onToggleFavorite: () => onToggleFavorite(course),
+                          isFavorite: provider.isFavorite(course.code),
+                          onTap: () => _openDetail(context, course),
+                          onToggleFavorite: () =>
+                              _toggleFavorite(context, course),
                         );
                       }
 
@@ -132,7 +157,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text(
                     'Data course dimuat dari '
-                    '${CourseRepository.defaultAssetPath}.',
+                    '${CourseService.defaultAssetPath}.',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],

@@ -6,7 +6,7 @@
 
 import 'package:course_explorer/core/breakpoint.dart';
 import 'package:course_explorer/core/student_identity.dart';
-import 'package:course_explorer/data/course.dart';
+import 'package:course_explorer/models/course.dart';
 import 'package:course_explorer/data/course_repository.dart';
 import 'package:course_explorer/main.dart';
 import 'package:course_explorer/widgets/feedback_form.dart';

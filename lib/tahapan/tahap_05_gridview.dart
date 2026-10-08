@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/breakpoint.dart';
-import '../data/course.dart';
+import '../models/course.dart';
 import '../data/course_repository.dart';
 import '../widgets/course_card.dart';
 import '../widgets/identity_header.dart';

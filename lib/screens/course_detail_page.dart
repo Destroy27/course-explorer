@@ -1,31 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../core/student_identity.dart';
-import '../data/course.dart';
+import '../models/course.dart';
+import '../providers/course_provider.dart';
 
-/// Halaman detail course. Data course dikirim lewat constructor.
-class CourseDetailPage extends StatefulWidget {
-  const CourseDetailPage({
-    super.key,
-    required this.course,
-    required this.isFavorite,
-  });
+/// Halaman detail course (v2).
+///
+/// Klik favorite langsung mengubah [CourseProvider] (shared state), sehingga
+/// daftar, halaman lain, dan halaman ini selalu konsisten — tanpa perlu
+/// mengirim hasil balik lewat `Navigator.pop` seperti versi sebelumnya.
+class CourseDetailPage extends StatelessWidget {
+  const CourseDetailPage({super.key, required this.course});
 
   final Course course;
-  final bool isFavorite;
 
-  @override
-  State<CourseDetailPage> createState() => _CourseDetailPageState();
-}
-
-class _CourseDetailPageState extends State<CourseDetailPage> {
-  late bool _isFavorite = widget.isFavorite;
+  void _toggleFavorite(BuildContext context) {
+    final CourseProvider provider = context.read<CourseProvider>();
+    final bool isFavorite = !provider.isFavorite(course.code);
+    provider.toggleFavorite(course.code);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isFavorite
+              ? '${course.code} ditandai sebagai favorit - $identityLine'
+              : '${course.code} favorite dibatalkan - $identityLine',
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colors = theme.colorScheme;
-    final Course course = widget.course;
+    final CourseProvider provider = context.watch<CourseProvider>();
+    final bool favorite = provider.isFavorite(course.code);
 
     return Scaffold(
       appBar: AppBar(
@@ -33,10 +44,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         actions: <Widget>[
           IconButton(
             tooltip: 'Tandai favorit',
-            onPressed: () => setState(() => _isFavorite = !_isFavorite),
+            onPressed: () => _toggleFavorite(context),
             icon: Icon(
-              _isFavorite ? Icons.star : Icons.star_border,
-              color: _isFavorite ? Colors.amber.shade700 : null,
+              favorite ? Icons.star : Icons.star_border,
+              color: favorite ? Colors.amber.shade700 : null,
             ),
           ),
         ],
@@ -112,15 +123,12 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 children: <Widget>[
                   Expanded(
                     child: FilledButton.icon(
-                      onPressed: () {
-                        // Returning data: kirim hasil favorite ke list.
-                        Navigator.pop(context, _isFavorite);
-                      },
+                      onPressed: () => _toggleFavorite(context),
                       icon: Icon(
-                        _isFavorite ? Icons.check_circle : Icons.star_outline,
+                        favorite ? Icons.check_circle : Icons.star_outline,
                       ),
                       label: Text(
-                        _isFavorite ? 'Sudah Favorit' : 'Tandai Favorit',
+                        favorite ? 'Sudah Favorit' : 'Tandai Favorit',
                       ),
                     ),
                   ),
